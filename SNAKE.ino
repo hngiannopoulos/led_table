@@ -20,40 +20,38 @@
 
 //globals
 
-byte snake[75] = {
-  0xFF}; //sored in BCD (xy) where 0xFF is equivalent to the null therminator 
+byte snake[75] = {0xFF}; //sored in BCD (xy) where 0xFF is equivalent to the null therminator 
 //The array is backwards, the head is at the highest value  snakeHead = snake[snakeLenght]
 byte snakeDirection  = movingUp;
 byte snakeLength = 1;
 byte apple;
 byte snakeState;
 
-head
 
 
-void snakeAI(struct CRGB * disp){
-   byte appleX = (apple>>4) & 0x0F;
-   byte appleY = (apple & 0x0F);
-   byte headX = (snake[snakeLength] >> 4) 0x0F;
-   byte headY = (snake[snakeLength] & 0x0F);
+// void snakeAI(struct CRGB * disp){
+//    byte appleX = (apple>>4) & 0x0F;
+//    byte appleY = (apple & 0x0F);
+//    byte headX = (snake[snakeLength] >> 4) 0x0F;
+//    byte headY = (snake[snakeLength] & 0x0F);
    
    
-  switch(snakeState){
-    case resetAll:
-      snakeInit();
-      snakeState = lookingForDirection;
-     break;
+//   switch(snakeState){
+//     case resetAll:
+//       snakeInit();
+//       snakeState = lookingForDirection;
+//      break;
      
-     case lookingForDirection:
-       byte quadrant = determineQuadrant(headX, headY, appleX, appleY);
-       if((quadrant == 4) || (quadrant == 5)){       //if youre in line with the thing already
-       }
+//      case lookingForDirection:
+//        byte quadrant = determineQuadrant(headX, headY, appleX, appleY);
+//        if((quadrant == 4) || (quadrant == 5)){       //if youre in line with the thing already
+//        }
        
-       if(quadrant == 
+//        if(quadrant == 
       
        
-  } 
-}
+//   } 
+// }
 
 
 
