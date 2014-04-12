@@ -20,16 +20,18 @@ RTC_DS1307 rtc;
 *===========PROGRAM VARIBLES========================================================
 */
 #define brightness 200
-#define gameOfLifeTime 175
+#define gameOfLifeTime 250
 #define debounceTime 200
-#define rainbowTime 20
+#define rainbowTime 40
 #define rainbowWidth 0x2F
+
+#define INITIAL_PROGRAM_POS 3    
 //==================================================================================
 
 // TEST SPRITE
 word sprite1[10] = {0x1200, 0x3F00, 0x6E80, 0xFFC0, 0xBF40, 0xA140, 0x1200,0x0000,0x0000, 0x0000};
   
-char globalProgramPos = 1; 
+char globalProgramPos = INITIAL_PROGRAM_POS; 
 
 unsigned long int lastMillis, nowMillis;
 
