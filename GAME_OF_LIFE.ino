@@ -7,7 +7,6 @@
  otherwise you need to wait for 16 frames for the game to reset
  
  */
-
 void gameOfLife(struct CRGB * disp, struct CRGB color, byte res){
   static word current[15];  //current 16x16 playing fied
   static word next[15];     //next 16x16 playing field
@@ -21,10 +20,7 @@ void gameOfLife(struct CRGB * disp, struct CRGB color, byte res){
     for(byte i = 0; i< 15; i++){        
       current[i] = random(0xFFFF);      //ramdomly populate playing field
     }
-
-    LEDS.showColor(CRGB(random(255), random(255), random(255)));    //fill the grid with a random color
-    //delay(700);
-
+    
     Reset = 0;        //set reset flag back to 0;
     emptycount = 0;   //if the reset flag was thrown internally by a stagnated game reset stagnant frame count 
     //timeKeep = millis()+600;
@@ -71,18 +67,18 @@ Serial.println("checked generation");
   //reset counter to see when game has stagnated
   fadecount = 0;
   for(byte i = 0; i<15; i++){      //copy new frame to current frame
-    if(((unsigned int)(next[i]>>6) == ((unsigned int)(current[i]>>6))) && (i < 10)){ 
+    if(((unsigned int)(next[i])) == ((unsigned int)(current[i]))){ 
       fadecount++;
     }
     current[i] = next[i]; 
   }
 
-  if(fadecount > 5)    //if most of the frame has not moved
+  if(fadecount > 7)    //if most of the frame has not moved
     emptycount++;     //add 1 to emptycount
   else
     emptycount = 0;         //reset emptycount to 0 to prevent false positives
 
-  if(emptycount>15)        //if game had been mostly stagnant for 15 frames in a row, throw internal reset
+  if(emptycount>25)        //if game had been mostly stagnant for 15 frames in a row, throw internal reset
     Reset = 1;
     
   
@@ -100,30 +96,3 @@ Serial.println("checked generation");
   frameOffset++;
   return;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
