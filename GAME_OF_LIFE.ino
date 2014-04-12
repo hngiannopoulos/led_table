@@ -20,11 +20,11 @@ void gameOfLife(struct CRGB * disp, struct CRGB color, byte res){
     for(byte i = 0; i< 15; i++){        
       current[i] = random(0xFFFF);      //ramdomly populate playing field
     }
-    
+
     Reset = 0;        //set reset flag back to 0;
     emptycount = 0;   //if the reset flag was thrown internally by a stagnated game reset stagnant frame count 
     //timeKeep = millis()+600;
-    Serial.println("Reset");
+    //Serial.println("Reset");
     return;
   }
 
@@ -60,7 +60,7 @@ for(byte y = 0; y<16; y++){         //check each row
   }
 }    //finish generation */
    
-Serial.println("checked generation");
+//Serial.println("checked generation");
 
  
 
