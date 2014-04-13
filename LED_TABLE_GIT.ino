@@ -5,7 +5,6 @@
 
 
 #include <Wire.h>
-#include <ArduinoNunchuk.h>
 #include "RTClib.h"
 #include "TimerOne.h"
 
@@ -21,7 +20,10 @@ RTC_DS1307 rtc;
 #define brightness 200
 #define NUM_LEDS 100 
 
-#define gameOfLifeTime 250    //in # of frames per generation
+#define gameOfLifeTime 25    //in # of frames per generation
+#define gameOfLifeR     1     //1 - Color on  0 -color off
+#define gameOfLifeG     1     //1 - Color on  0 -color off
+#define gameOfLifeB     1     //1 - Color on  0 -color off
 
 #define debounceTime 200
 
@@ -44,7 +46,6 @@ char frame_draw_flag = 0;                      //set to 1 if frame was drawn
 
 CRGB leds[NUM_LEDS];                           //sets global variable for leds 
 
-ArduinoNunchuk nunchuk = ArduinoNunchuk();
 
 /*
 *============INTERRUPTS======================================================
@@ -87,7 +88,7 @@ void setup() {
   memset(leds, 0,  NUM_LEDS * sizeof(struct CRGB));
   LEDS.show();
 
-  gameOfLife(leds, Wheel(millis()%254), 1);
+  gameOfLife(leds, 1);
   
   attachInterrupt(INT1, Interrupt, FALLING);
 
@@ -103,7 +104,7 @@ void loop() {
 //-----------------------------------------------------------------------
     case 0:
         if(frame_draw_flag){
-          gameOfLife(leds, Wheel(millis()/15%0x5ff), 0);
+          gameOfLife(leds, 0);
           frame_draw_flag = 0;               //reset frame draw flag
         }
         break;
