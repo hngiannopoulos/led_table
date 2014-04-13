@@ -1,5 +1,5 @@
 #include "Font.h"
-#include "FastSPI_LED2.h"
+#include "FastLED.h"
 #include <EEPROM.h>
 #include <avr/pgmspace.h>
 
@@ -60,7 +60,7 @@ void Interrupt(){
 }
 
 void int_draw_frame(){
-    LEDS.show();
+    FastLED.show();
     frame_draw_flag = 1;
 }
 
@@ -72,7 +72,7 @@ void setup() {
   
   randomSeed(analogRead(0));
 
-  nunchuk.init();
+  // nunchuk.init();
 
   pinMode(analogPin, INPUT);
   pinMode(strobePin, OUTPUT);
@@ -83,10 +83,10 @@ void setup() {
   Wire.begin();
   rtc.begin();
 
-  LEDS.setBrightness(brightness);
-  LEDS.addLeds<WS2801, 11, 13, RGB, DATA_RATE_MHZ(1)>(leds, NUM_LEDS);
+  FastLED.setBrightness(brightness);
+  FastLED.addLeds<WS2801, 11, 13, RGB, DATA_RATE_MHZ(1)>(leds, NUM_LEDS);
   memset(leds, 0,  NUM_LEDS * sizeof(struct CRGB));
-  LEDS.show();
+  FastLED.show();
 
   gameOfLife(leds, 1);
   
@@ -115,7 +115,7 @@ void loop() {
         //Serial.println(time);
         for(char i = 0; i<=scrollText(time, 1,i, leds, Wheel(50)); i++){
           delay(100);
-          LEDS.show();
+          FastLED.show();
           memset(leds, 0,  NUM_LEDS * sizeof(struct CRGB));
           if(globalProgramPos != 1)
             break;
