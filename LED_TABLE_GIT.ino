@@ -6,6 +6,8 @@
 #include "RTClib.h"
 #include "TimerOne.h"
 #include "FastLED.h"
+#include "SPI.h"
+
 
 /*
 *===========#DEFINES========================================================
@@ -23,6 +25,7 @@ RTC_DS1307 rtc;
 #define gameOfLifeR     0     //1 - Color on  0 -color off
 #define gameOfLifeG     0     //1 - Color on  0 -color off
 #define gameOfLifeB     1     //1 - Color on  0 -color off
+#define gameOfLifeMaxGen 3
 
 #define debounceTime 200
 
@@ -63,7 +66,13 @@ void Interrupt(){
 
 void int_draw_frame(){
     frame_draw_flag = 1;
-    FastLED.show();
+    Serial.println("IN ISR");
+    for(byte i = 0; i < 100; i++){
+        SPI.transfer(leds[i].r);
+        SPI.transfer(leds[i].g);
+        SPI.transfer(leds[i].b);
+    }
+    
 
     }
 
@@ -76,6 +85,9 @@ void setup() {
   
   randomSeed(analogRead(0));
 
+
+  SPI.begin(); // wake up the SPI bus.
+  SPI.setBitOrder(MSBFIRST);
   // nunchuk.init();
 
   pinMode(analogPin, INPUT);

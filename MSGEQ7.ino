@@ -8,12 +8,12 @@ void readEQ(byte *spectrumValue){
     delayMicroseconds(30); // to allow the output to settle
     spectrumValue[i] = analogRead(analogPin);
      digitalWrite(strobePin, HIGH);
-     Serial.print(spectrumValue[i]);
-     Serial.print(",");
+     // Serial.print(spectrumValue[i]);
+     // Serial.print(",");
      
     
   }
-  Serial.println();
+  // Serial.println();
 
 }
 

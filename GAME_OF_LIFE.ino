@@ -21,7 +21,6 @@ void gameOfLife(struct CRGB * disp, byte res){
   byte fadeInVal, fadeOutVal;
   static byte genCount = 0;
 
-  Serial.println(frameCount);
   if((Reset == 1) | (res == 1)){    //if reset flag is thrown
 
       for(byte i = 0; i< 15; i++){        
@@ -98,18 +97,32 @@ void gameOfLife(struct CRGB * disp, byte res){
      }
   }
    
-   
-  //fadecount = 0;
-  if(frameCount == gameOfLifeTime){
-      for(byte i = 0; i<16; i++){      //copy new frame to current frame
-        current[i] = next[i]; 
-      }
-       frameCount = 0;
-  }
-  else{
-    frameCount++;
-  }
-  
   frameOffset++;
+  fadecount = 0;
+  if(frameCount == gameOfLifeTime){
+    frameCount = 0;                   //reset frame count
+    genCount++;
+
+    for(byte i = 0; i<16; i++){      //copy new frame to current frame
+      if(((unsigned int)(next[i]) == ((unsigned int)(current[i]))) && (i < 10))
+          fadecount++;
+
+      current[i] = next[i]; 
+    } //end for loop
+
+    if(fadecount > 5)    //if most of the frame has not moved
+      emptycount++;     //add 1 to emptycount
+    else
+      emptycount = 0;         //reset emptycount to 0 to prevent false positives
+
+    if((emptycount>5) || (genCount > gameOfLifeMaxGen))        //if game had been mostly stagnant for 15 frames in a row, throw internal reset
+      Reset = 1;
+  }
+
+  else
+    frameCount++;
+  
+  
+ 
   return;
 }
