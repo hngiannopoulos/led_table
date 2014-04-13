@@ -7,7 +7,6 @@
 #define turnLeft    5
 #define noTurn      6 
 #define endOfSnake  0xFF
-
 //SnakeStates
 #define resetAll 0
 #define lookingForDirection 1

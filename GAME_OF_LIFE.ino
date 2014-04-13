@@ -8,6 +8,7 @@
  
  */
 void gameOfLife(struct CRGB * disp, byte res){
+
   static word current[15];  //current 16x16 playing fied
   static word next[15];     //next 16x16 playing field
   static byte emptycount;
@@ -16,23 +17,26 @@ void gameOfLife(struct CRGB * disp, byte res){
   static byte frameCount = 0;
 
   byte xMod, yMod, alive, fadecount;
-  CRGB fadeInColor, fadeOutColor;
+  CRGB fadeInColor, fadeOutColor, onColor;
+  byte fadeInVal, fadeOutVal;
+  static byte genCount = 0;
 
   Serial.println(frameCount);
-
   if((Reset == 1) | (res == 1)){    //if reset flag is thrown
-      Serial.print("Reset at ");
-      Serial.println(millis());
+
       for(byte i = 0; i< 15; i++){        
         current[i] = random(0xFFFF);      //ramdomly populate playing field
       }
       Reset = 0;        //set reset flag back to 0;
       emptycount = 0;   //if the reset flag was thrown internally by a stagnated game reset stagnant frame count 
+      genCount = 0;
       return;
   }
 
   //check each cell to update for next generation generation
-  //if(frameCount == 0){
+  if(frameCount == 0){
+    Serial.print("Run");
+    Serial.println(frameCount);
     for(byte y = 0; y<16; y++){         //check each row
       for(byte x = 0; x <16; x++){    //Check each column
         xMod =(15-((x + 15) % 15));    //flip x 
@@ -56,25 +60,32 @@ void gameOfLife(struct CRGB * disp, byte res){
           else
             bitWrite(next[yMod], xMod, 1);                //lives
         }
-        else if(bitRead(current[yMod], xMod) == 0){
+        else{
           if (alive == 3)
             bitWrite(next[yMod], xMod, 1);                  //stays alive
         }
 
       }
     }    //finish generation */
- // }
-  fadeInColor = CRGB(0, 0, 255);
-  fadeOutColor = CRGB(255, 0, 0);
+
+
+  }
+
+  //memset(leds, 0,  NUM_LEDS * sizeof(struct CRGB));
+  fadeInVal     = frameCount * 5;
+  fadeOutVal    = 250- fadeInVal;
+  fadeInColor   = CRGB(fadeInVal * gameOfLifeR, fadeInVal * gameOfLifeG, fadeInVal * gameOfLifeB);
+  fadeOutColor  = CRGB(fadeOutVal * gameOfLifeR, fadeOutVal * gameOfLifeG, fadeOutVal * gameOfLifeB);
+  onColor       =  CRGB(255 * gameOfLifeR, 255 * gameOfLifeG, 255 * gameOfLifeB); 
+
   for(byte y = 0; y<10; y++){      //draw the current frame window 
     for(byte x = 0; x<10; x++){
-
       if( (bitRead(current[y], GOL_BUFFER_WRAP(x))==0) && (bitRead(next[y], GOL_BUFFER_WRAP(x))==0)){    //keep on all the way if the colonly isnt changing
-           disp[cordinate(x,y)] = CRGB(0, 0,0); 
+           disp[cordinate(x,y)] = CRGB::Black; 
       }
 
       else if( (bitRead(current[y], GOL_BUFFER_WRAP(x))==1) && (bitRead(next[y], GOL_BUFFER_WRAP(x))==1) ){    //keep on all the way if the colonly isnt changing
-        disp[cordinate(x,y)] = CRGB(255,255,255); 
+        disp[cordinate(x,y)] = onColor; 
       }
       else if( (bitRead(current[y], GOL_BUFFER_WRAP(x)) == 1) && (bitRead(next[y], GOL_BUFFER_WRAP(x))==0) ){         //fade current out
             disp[cordinate(x,y)] = fadeOutColor;
@@ -84,32 +95,21 @@ void gameOfLife(struct CRGB * disp, byte res){
               disp[cordinate(x,y)] = fadeInColor;
       }
      
-    }
+     }
   }
    
    
   //fadecount = 0;
   if(frameCount == gameOfLifeTime){
-    for(byte i = 0; i<16; i++){      //copy new frame to current frame
-      current[i] = next[i]; 
-    }
-
-    // if(fadecount > 7)    //if most of the frame has not moved
-    //   emptycount++;     //add 1 to emptycount
-
-    // else
-    //   emptycount = 0;         //reset emptycount to 0 to prevent false positives
-
-    // if(emptycount>25)        //if game had been mostly stagnant for 15 frames in a row, throw internal reset
-    //   Reset = 1;
-
-     frameCount = 0;
+      for(byte i = 0; i<16; i++){      //copy new frame to current frame
+        current[i] = next[i]; 
+      }
+       frameCount = 0;
   }
   else{
     frameCount++;
   }
   
   frameOffset++;
-
   return;
 }

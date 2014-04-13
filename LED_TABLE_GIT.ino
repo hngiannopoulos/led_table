@@ -1,12 +1,11 @@
 #include "Font.h"
-#include "FastLED.h"
 #include <EEPROM.h>
 #include <avr/pgmspace.h>
-
 
 #include <Wire.h>
 #include "RTClib.h"
 #include "TimerOne.h"
+#include "FastLED.h"
 
 /*
 *===========#DEFINES========================================================
@@ -20,9 +19,9 @@ RTC_DS1307 rtc;
 #define brightness 200
 #define NUM_LEDS 100 
 
-#define gameOfLifeTime 25    //in # of frames per generation
-#define gameOfLifeR     1     //1 - Color on  0 -color off
-#define gameOfLifeG     1     //1 - Color on  0 -color off
+#define gameOfLifeTime 50    //in # of frames per generation
+#define gameOfLifeR     0     //1 - Color on  0 -color off
+#define gameOfLifeG     0     //1 - Color on  0 -color off
 #define gameOfLifeB     1     //1 - Color on  0 -color off
 
 #define debounceTime 200
@@ -47,6 +46,9 @@ char frame_draw_flag = 0;                      //set to 1 if frame was drawn
 CRGB leds[NUM_LEDS];                           //sets global variable for leds 
 
 
+unsigned long debug_time = 0;
+
+
 /*
 *============INTERRUPTS======================================================
 */
@@ -60,9 +62,11 @@ void Interrupt(){
 }
 
 void int_draw_frame(){
-    FastLED.show();
     frame_draw_flag = 1;
-}
+    FastLED.show();
+
+    }
+
 
 /*
 *=========SETUP======================================
@@ -108,21 +112,9 @@ void loop() {
           frame_draw_flag = 0;               //reset frame draw flag
         }
         break;
-//-------------------------------------------------------------        
-     case 1:
-        char time[6];
-        rtcString(time);
-        //Serial.println(time);
-        for(char i = 0; i<=scrollText(time, 1,i, leds, Wheel(50)); i++){
-          delay(100);
-          FastLED.show();
-          memset(leds, 0,  NUM_LEDS * sizeof(struct CRGB));
-          if(globalProgramPos != 1)
-            break;
-        }
-        break;
+//-------------------------------------------------------------        S
 //------------------------------------------------------------------------
-      case 2:
+      case 1:
         if(frame_draw_flag){
             makeRainbow(leds,(millis()/rainbowTime)%0x0600);
             frame_draw_flag = 0;        //reset frame draw flag
