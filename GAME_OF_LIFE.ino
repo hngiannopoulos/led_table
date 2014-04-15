@@ -90,8 +90,11 @@ void gameOfLife(struct CRGB * disp, byte res){
     }    //finish generation */
   }
 
-  fadeInVal     = frameCount * 5;
-  fadeOutVal    = 250- fadeInVal;
+
+  fadeInVal     = (frameCount * gameOfLifeNLFactor) ;   //uncomment for non-linear brightness
+  fadeOutVal    = 250 - fadeInVal;
+  // fadeInVal     = linearPWM(frameCount * gameOfLifeLFactor);                            //uncomment for linear brightness
+  // fadeOutVal    = linearPWM((gameOfLifeTime - frameCount) * gameOfLifeLFactor);
   fadeInColor   = CRGB(fadeInVal * gameOfLifeR, fadeInVal * gameOfLifeG, fadeInVal * gameOfLifeB);
   fadeOutColor  = CRGB(fadeOutVal * gameOfLifeR, fadeOutVal * gameOfLifeG, fadeOutVal * gameOfLifeB);
   onColor       =  CRGB(255 * gameOfLifeR, 255 * gameOfLifeG, 255 * gameOfLifeB); 

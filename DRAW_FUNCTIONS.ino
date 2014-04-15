@@ -219,7 +219,14 @@ byte scrollText(char string[], byte yPos, byte scanPosition, struct CRGB* disp, 
 }
 
 
-
+// returns a pwm value (0..255) for a required percentage (0..100) 
+// as to provide a linear fade as perceived by eye
+int linearPWM(int percentage){
+  // coefficients
+  double a = 9.7758463166360387E-01;
+  double b = 5.5498961535023345E-02;
+  return floor((a * exp(b*percentage)+.5))-1;
+}
 
 
 
