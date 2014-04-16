@@ -37,7 +37,7 @@ RTC_DS1307 rtc;
 
 #define FRAMERATE 40000 //about 40ms (in us)  == 25fps
 
-#define INITIAL_PROGRAM_POS 2   
+#define INITIAL_PROGRAM_POS 2 
 
 /*
 *=========GLOBAL VARIABLES==================================================
@@ -105,6 +105,8 @@ void setup() {
   FastLED.show();
 
   gameOfLife(leds, 1);
+
+  snakeInit();
   
   attachInterrupt(INT1, Interrupt, FALLING);
 
@@ -133,7 +135,22 @@ void loop() {
         }
        break;
       
+      case 2:
+        if(frame_draw_flag){
+          snakeAI(leds);
+          frame_draw_flag = 0;
+        }
+      break;
       
+
+      case 3:
+        if(frame_draw_flag){
+        leds[cordinate(0,0)] = CRGB::Red;
+        leds[cordinate(0,1)] = CRGB::Blue;
+        frame_draw_flag = 0;
+        }
+        break;
+
       default:
         globalProgramPos =0;
         break;
