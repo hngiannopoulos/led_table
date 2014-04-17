@@ -21,15 +21,6 @@ RTC_DS1307 rtc;
 #define brightness 200
 #define NUM_LEDS 100 
 
-#define gameOfLifeTime 50        //in # of frames per generation
-#define gameOfLifeNLFactor (char)(255/gameOfLifeTime)
-#define gameOfLifeLFactor   (char)(100/gameOfLifeTime)
-#define gameOfLifeR     0         //1 - Color on  0 -color off
-#define gameOfLifeG     0         //1 - Color on  0 -color off
-#define gameOfLifeB     1         //1 - Color on  0 -color off
-#define gameOfLifeMaxGen 30       //Max numbers of generations before reset
-#define gameOfLifeResetFade 50    //time of reset fade
-
 #define debounceTime 200
 
 #define rainbowTime 25      //shorter time is a faster movement

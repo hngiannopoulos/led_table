@@ -13,7 +13,7 @@
 #define lookingForDirection 1
 #define deathAnimation 2
 
-#define framesPerMovement 5
+//#define framesPerMovement 7
 
 #define snakeR     0         //1 - Color on  0 -color off
 #define snakeG     1         //1 - Color on  0 -color off
@@ -39,6 +39,7 @@ byte snakeState;
 
 
 void snakeAI(struct CRGB * disp){
+  byte framesPerMovement =  constrain(6 - (snakeLength / 5), 0, 6);
    static byte framesSinceLastGen = framesPerMovement;
    static byte animationCount = 0;
    static byte gameStarted;
@@ -63,30 +64,33 @@ void snakeAI(struct CRGB * disp){
             quadrant = determineQuadrant(headX, headY, appleX, appleY);
             //Serial.print("Direction = "); Serial.println(quadrant);
             if(snakeDirection == movingUp){
-                if((quadrant == 0) || (quadrant == 2)) 
-                  gameState = snakeMove(turnLeft);
-                else if((quadrant == 1) || (quadrant == 3))
-                  gameState = snakeMove(turnRight);  
-                else if(quadrant == 7)
-                  gameState = snakeMove(turnLeft); 
+                if((quadrant == 0) || (quadrant == 1)) 
+                  gameState = snakeMove(noTurn);
+                else if((quadrant == 2))
+                  gameState = snakeMove(turnLeft);  
+                else if(quadrant == 3)
+                  gameState = snakeMove(turnRight); 
                 else if(quadrant == 5)
                   gameState = snakeMove(turnRight); 
+                else if(quadrant == 7)
+                  gameState = snakeMove(turnLeft);
                 else if((quadrant == 6) || (quadrant == 4))
                   gameState = snakeMove(noTurn);
             }
 
             else if(snakeDirection == movingDown){
-                if((quadrant == 0) || (quadrant == 2)) 
-                  gameState = snakeMove(turnRight);
-                else if((quadrant == 1) || (quadrant == 3))
-                  gameState = snakeMove(turnLeft);  
-                else if(quadrant == 7)
-                  gameState = snakeMove(turnRight); 
+               if((quadrant == 2) || (quadrant == 3)) 
+                  gameState = snakeMove(noTurn);
+                else if((quadrant == 0))
+                  gameState = snakeMove(turnRight);  
+                else if(quadrant == 1)
+                  gameState = snakeMove(turnLeft); 
                 else if(quadrant == 5)
                   gameState = snakeMove(turnLeft); 
+                else if(quadrant == 7)
+                  gameState = snakeMove(turnRight);
                 else if((quadrant == 6) || (quadrant == 4))
                   gameState = snakeMove(noTurn);
-
             }
 
             else if(snakeDirection == movingLeft){
@@ -130,10 +134,10 @@ void snakeAI(struct CRGB * disp){
             if(animationCount <= snakeLength){
                
                 byte X, Y;
-                Serial.println(animationCount);
-                byte snakeVal = (byte)(( (animationCount * (float)225.0/snakeLength)) + 30);
-                X = (snake[animationCount] >> 4) & 0x0F;   //unmask x cord
-                Y = (snake[animationCount] & 0x0F);        //unmask y
+               // Serial.println(animationCount);
+                byte snakeVal = (byte)(( ((snakeLength - animationCount) * (float)225.0/snakeLength)) + 30);
+                X = (snake[snakeLength - animationCount] >> 4) & 0x0F;   //unmask x cord
+                Y = (snake[snakeLength - animationCount] & 0x0F);        //unmask y
                 leds[cordinate(X,Y)] = CRGB(snakeVal * snakeDeathR, snakeVal * snakeDeathG, snakeVal * snakeDeathB);
                  animationCount++;
             }
@@ -192,82 +196,117 @@ void snakeInit(){
 
 byte snakeMove(byte turning){           
   byte snakeHead = snake[snakeLength - 1 ];  //pull snake head coordinate
+  byte findMove = 1;
   byte X, Y, i;
-  X = (snakeHead >> 4) & 0x0F;   //unmask x cord
-  Y = (snakeHead & 0x0F);        //unmask y
+  byte tempSnakeDirection = snakeDirection;
+  byte moveOk = 0;
+  byte returnVal = 0;
+      //some sort of fucking table 
+      //modifies snake head 
+    while(moveOk < 5){
+      X = (snakeHead >> 4) & 0x0F;   //unmask x cord
+      Y = (snakeHead & 0x0F);        //unmask y
+      switch(snakeDirection){
+        case(movingUp):  
+            if(turning == noTurn){
+              Y++;
+              tempSnakeDirection = movingUp;
+            }
+            else if(turning ==turnRight){
+              X--;
+              tempSnakeDirection = movingRight;
+            }
+            else if(turning == turnLeft){
+              X++;
+              tempSnakeDirection = movingLeft;
+            }
+        break;
 
-  //some sort of fucking table 
-  //modifies snake head 
-  switch(snakeDirection){
-    case(movingUp):  
-        if(turning == noTurn)
-          Y++;
-        else if(turning ==turnRight){
-          X--;
-          snakeDirection = movingRight;
-        }
-        else if(turning == turnLeft){
-          X++;
-          snakeDirection = movingLeft;
-        }
-    break;
+        case(movingDown):  
+            if(turning == noTurn){
+              Y--;
+              tempSnakeDirection = movingDown;
+            }
+            if(turning ==turnRight){
+              X++;
+              tempSnakeDirection = movingLeft;  
+            }
+            if(turning == turnLeft){
+              X--;
+              tempSnakeDirection  = movingRight;
+            }
+        break;
 
-    case(movingDown):  
-        if(turning == noTurn)
-          Y--;
-        if(turning ==turnRight){
-          X++;
-          snakeDirection = movingLeft;  
-        }
-        if(turning == turnLeft){
-          X--;
-          snakeDirection  = movingRight;
-        }
-    break;
+        case(movingLeft):  
+            if(turning == noTurn){
+              X++;
+              tempSnakeDirection = movingLeft;
+            }
+            if(turning ==turnRight){
+              Y++;
+              tempSnakeDirection = movingUp;
+            }
+            if(turning == turnLeft){
+              Y--;
+              tempSnakeDirection = movingDown;
+            }
+        break;
 
-    case(movingLeft):  
-        if(turning == noTurn)
-          X++;
-        if(turning ==turnRight){
-          Y++;
-          snakeDirection = movingUp;
-        }
-        if(turning == turnLeft){
-          Y--;
-          snakeDirection = movingDown;
-        }
-    break;
+        case(movingRight):
+            if(turning == noTurn){
+              X--;
+              tempSnakeDirection = movingRight;
+            }
+            if(turning ==turnRight){
+              Y--;
+              tempSnakeDirection = movingDown;
 
-    case(movingRight):
-        if(turning == noTurn)
-          X--;
-        if(turning ==turnRight){
-          Y--;
-          snakeDirection = movingDown;
+            }
+            if(turning == turnLeft){
+              Y++;
+              tempSnakeDirection = movingUp;
+            }
+        break;
+        
+        default:
+        //if you get here theres a lot of problems, but keep the head in the same spot.
+        break;
 
-        }
-        if(turning == turnLeft){
-          Y++;
-          snakeDirection = movingUp;
-        }
-    break;
-    
-    default:
-    //if you get here theres a lot of problems, but keep the head in the same spot.
-    break;
-
-  }  //end of switch
+      }  //end of switch
+      
+      
+      //checks to see if snake head overlaps with any other part of the snake
+      //returns 1 if you lost the game
+      returnVal = 0;
+      for(i = 0; i < snakeLength; i++){  
+          if(snake[i] == pointToBCD(X,Y) )              //if the head of the snake overlaps itself return a 1, loose flag
+            returnVal = 1; 
+      }
   
-  //checks to see if snake head overlaps with any other part of the snake
-  //returns 1 if you lost the game
-  for(i = 0; i < snakeLength; i++){  
-      if(snake[i] == pointToBCD(X,Y))              //if the head of the snake overlaps itself return a 1, loose flag
-        return 1; 
-  }
-  
-  
+      if(returnVal == 1){      //if youre going to hit yourself by turning, try agin going straight
+          moveOk++;   //add 1 to the try count
+          Serial.println(moveOk);
+          if((turning != noTurn) && (moveOk < 2)){   //if you're trying to turn 
+            turning = noTurn;
+             //Serial.println("Trying No Turn");
+          }
+          else {                  //if you're still going straight
+            turning = (moveOk % 2) ? turnLeft : turnRight;
+            //Serial.println("trying a turn");
+          }
+
+         
+          returnVal = 1; 
+      }
+      
+      else{
+        moveOk = 10;    //
+        snakeDirection = tempSnakeDirection;
+      }
+ 
+  }         //end of while(!moveOk)
+
   snake[snakeLength] = pointToBCD(X,Y);    //assign new head with modified X and Y values  
-
   if(snake[snakeLength] != apple){          //if new head isnt at the apple, move the snake down
       for(i = 0; i < snakeLength+1; i++)
           snake[i] = snake[i+1];
@@ -276,7 +315,7 @@ byte snakeMove(byte turning){
     snakeLength ++;                                //add one to the lenght of the snake 
     apple = makeApple();                           // and make new apple
   }
-  return 0;
+  return returnVal;
 } 
 
 // 0 | 1  on lines 4(V), 5
@@ -318,7 +357,7 @@ byte makeApple(){
   char tempApple;
   while(!appleOk){
     appleOk = 1;
-    tempApple = pointToBCD(random(0x08), random(0x08));
+    tempApple = pointToBCD(random(0x09) , random(0x09));
     for(byte i = 0; i < snakeLength; i++){
         if(tempApple == snake[i])
             appleOk = 0;   //if you hit overlap run again
