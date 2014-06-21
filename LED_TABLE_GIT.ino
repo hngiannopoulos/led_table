@@ -8,6 +8,8 @@
 #include "TimerOne.h"
 #include "FastLED.h"
 #include "SPI.h"
+#include "gameoflife.h"
+#include "draw.h"
 
 
 /*
@@ -34,7 +36,7 @@ RTC_DS1307 rtc;
 
 #define CORDINATE(X, Y) ((Y)%2)?(((10*((Y)+1))-1)-(X)):(10*(Y))+(X)  
 
-//int16_t cordinate(byte x, byte y)
+//int16_t CORDINATE(byte x, byte y)
 //{
 //  return (y%2)?(((10*(y+1))-1)-x):(10*y)+x;  
 //}
@@ -54,9 +56,11 @@ CRGB leds[NUM_LEDS];                           //sets global variable for leds
 
 snake snake(leds);
 draw draw(leds);
+gameoflife GOL(leds);
 
 unsigned long debug_time = 0;
 
+void makeRainbow(struct CRGB *disp, unsigned int hueStart);
 
 /*
 *============INTERRUPTS======================================================
@@ -107,8 +111,7 @@ void setup() {
   memset(leds, 0,  NUM_LEDS * sizeof(struct CRGB));
   FastLED.show();
 
-  gameOfLife(leds, 1);
-
+  GOL.run(1);
   snake.snakeInit();
   
   attachInterrupt(INT1, Interrupt, FALLING);
@@ -125,7 +128,7 @@ void loop() {
 //-----------------------------------------------------------------------
     case 0:
         if(frame_draw_flag){
-          gameOfLife(leds, 0);
+          GOL.run(0);
           frame_draw_flag = 0;               //reset frame draw flag
         }
         break;
@@ -148,9 +151,9 @@ void loop() {
 
       case 3:
         if(frame_draw_flag){
-        leds[cordinate(0,0)] = CRGB::Red;
-        leds[cordinate(0,1)] = CRGB::Blue;
-        frame_draw_flag = 0;
+          leds[CORDINATE(0,0)] = CRGB::Red;
+          leds[CORDINATE(0,1)] = CRGB::Blue;
+          frame_draw_flag = 0;
         }
         break;
 
@@ -162,6 +165,18 @@ void loop() {
         
 }
 
+void makeRainbow(struct CRGB *disp, unsigned int hueStart) {
+  unsigned char i;
+  //unsigned int hue = hueStart;
+
+  for(i = 0; i < 10; i++){
+        draw.drawLine(0, i, i, 0, draw.Wheel((hueStart + (i * rainbowWidth)) % 0x0600)); 
+      }
+  for(i = 1; i<10; i++){
+      draw.drawLine(i,9,9,i, draw.Wheel((hueStart + ((i+9) * rainbowWidth)) % 0x0600));
+  }
+  
+}
 
 
 
