@@ -1,8 +1,9 @@
-#include "Font.h"
 #include <EEPROM.h>
 #include <avr/pgmspace.h>
 
 #include <Wire.h>
+#include "snake.h"
+#include "draw.h"
 #include "RTClib.h"
 #include "TimerOne.h"
 #include "FastLED.h"
@@ -30,6 +31,15 @@ RTC_DS1307 rtc;
 
 #define INITIAL_PROGRAM_POS 2 
 
+
+#define CORDINATE(X, Y) ((Y)%2)?(((10*((Y)+1))-1)-(X)):(10*(Y))+(X)  
+
+//int16_t cordinate(byte x, byte y)
+//{
+//  return (y%2)?(((10*(y+1))-1)-x):(10*y)+x;  
+//}
+
+
 /*
 *=========GLOBAL VARIABLES==================================================
 */
@@ -42,6 +52,8 @@ char frame_draw_flag = 0;                      //set to 1 if frame was drawn
 
 CRGB leds[NUM_LEDS];                           //sets global variable for leds 
 
+snake snake(leds);
+draw draw(leds);
 
 unsigned long debug_time = 0;
 
@@ -97,7 +109,7 @@ void setup() {
 
   gameOfLife(leds, 1);
 
-  snakeInit();
+  snake.snakeInit();
   
   attachInterrupt(INT1, Interrupt, FALLING);
 
@@ -128,7 +140,7 @@ void loop() {
       
       case 2:
         if(frame_draw_flag){
-          snakeAI(leds);
+          snake.run();
           frame_draw_flag = 0;
         }
       break;
