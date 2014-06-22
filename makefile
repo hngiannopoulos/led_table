@@ -81,7 +81,7 @@
 #
 #   SOURCES := main.cc other.cc
 #   LIBRARIES := EEPROM
-#   BOARD := pro5v
+   BOARD := atmega328
 #   include ~/src/arduino.mk
 #
 # Here is a complete list of configuration parameters:

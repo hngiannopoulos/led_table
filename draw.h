@@ -6,6 +6,8 @@
 #include "font.h"
 
 #define CORDINATE(X, Y) ((Y)%2)?(((10*((Y)+1))-1)-(X)):(10*(Y))+(X)  
+#define MAX_BUFFER_LEN 420 
+#define NUM_LEDS 100
 
 class draw{
 
@@ -21,7 +23,8 @@ struct CRGB Wheel(int WheelPos);
 
 /*
   Uses this formula to draw a line from two points in CRGB struct color
- INPUTS: x0, y0, x1, y1, disp - pointer to display matrix, color- CRGB struct of the color to draw the line in.
+ INPUTS: x0, y0, x1, y1, disp - pointer to display 
+ matrix, color- CRGB struct of the color to draw the line in.
  */
 void drawLine(int16_t x0, int16_t y0,int16_t x1, int16_t y1, struct CRGB color);
 
@@ -45,12 +48,17 @@ void placeChar(char Character, byte xPos, byte yPos, struct CRGB color);
  OUTPUT: PositionInBuffer - 10 - 
  HOW TO CALL:  for(char i = 0; i<=scrollText(message, 1,i, leds, Wheel(50)); i++){
  */
-byte scrollText(char string[], byte yPos, byte scanPosition, struct CRGB color);
+byte scrollText(struct CRGB color);
+
+void setString(char string[]);
 
 int linearPWM(int percentage);
 
 private:
   struct CRGB * disp;
+  byte messageBuffer[MAX_BUFFER_LEN];
+  int scanPosition;
+  int bufferLength;
 
 };
 

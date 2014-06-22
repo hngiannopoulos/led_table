@@ -261,7 +261,7 @@ byte snake::snakeMove(byte turning){
    
          if(returnVal == 1){         //if youre going to hit yourself by turning, try agin going straight
                moveOk++;    //add 1 to the try count
-               Serial.println(moveOk);
+               //Serial.println(moveOk);
                if((turning != noTurn) && (moveOk < 2)){    //if you're trying to turn 
                   turning = noTurn;
                    //Serial.println("Trying No Turn");

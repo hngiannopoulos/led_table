@@ -43,7 +43,7 @@ void gameoflife::run(byte res){
                       disp[CORDINATE(x,y)] = fadeOutColor;
                   }
             }
-            Serial.println(fadeOutVal);
+            //Serial.println(fadeOutVal);
           }
       }
 

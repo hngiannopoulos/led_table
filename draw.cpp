@@ -169,51 +169,59 @@ void draw::placeChar(char Character, byte xPos, byte yPos, struct CRGB color){
  
  
  */
-byte draw::scrollText(char string[], byte yPos, byte scanPosition, struct CRGB color){
-   byte stringLength = 0;
-   byte horiz = 0;
-   byte positionInBuffer = 0;
-   byte letter;
 
+void draw::setString(char string[]){
+   int positionInBuffer = 0;
+   int stringLength     = 0;
+   char letter;
+   scanPosition = 15;
    while(string[stringLength] != 0){            //Determine length of the string
       stringLength++;
    }
-   byte messageBuffer[(stringLength*6)+20];                  //array used for combining the data for each character in the string 
+   bufferLength = (stringLength*6)+20;
    //memset(messageBuffer, 0, stringLength*6);
 
    //The array is 6x as long as the length of the input string
+   // ADD 10 Columns Blank in the beginning of the message
    for(byte i = 0; i<10; i++){
-      messageBuffer[positionInBuffer] = 0;
-      positionInBuffer++;
+      messageBuffer[positionInBuffer++] = 0;
    }
-
-
    //copies data for each character into a message buffer
    for(byte character = 0; character < stringLength; character++){             //for each charater in the string
-      letter = string[character];                                                                //copy ASCII value from string
+      letter = string[character];                                              //copy ASCII value from string
 
-      for(byte verticalData = 0; verticalData <5; verticalData++){                              //for each vertical byte of a letter
-         byte temp = pgm_read_byte_near(((font5x7[letter-48])+verticalData));   //copy data from progmem   
-         messageBuffer[positionInBuffer++] = (byte)temp;                                                //copy data from the font to its respective spot in message buffer
+      for(byte verticalData = 0; verticalData <5; verticalData++){              //for each vertical byte of a letter
+         byte temp = pgm_read_byte_near(((font5x7[letter-48])+verticalData));   //copy data from progmem
+         //copy data from the font to its respective spot in message buffer
+         messageBuffer[positionInBuffer++] = temp;                        
       }
-
       messageBuffer[positionInBuffer++] = 0x00;
-
    }
-
+   //ADD 10 Columns at the end of the message
    for(byte i = 0; i<10; i++){
       messageBuffer[positionInBuffer++] = 0x00;
    }
 
+}
+
+
+byte draw::scrollText(struct CRGB color){
 
    //Print characterBuffer to the screen 
+   memset(disp, 0, NUM_LEDS * sizeof(struct CRGB));
    for(byte x = scanPosition;   x < (10+scanPosition) ; x++){
       for(byte y = 0; y < (8); y++){
          if(((messageBuffer[x]>>(7-(y))) & B00000001) != 0)
-            disp[CORDINATE(x-scanPosition,(y+yPos))] = color;
+            disp[CORDINATE(x-scanPosition,(y+2))] = color;
       }
-   } 
-   return (positionInBuffer - 10);   //return the lenght of the buffer
+   }
+   if(scanPosition < bufferLength){
+      scanPosition++;
+   }
+   else{
+      scanPosition = 0;
+   }
+   //scanPosition = (scanPosition < bufferLength) ? scanPosition++ : 5;
 }
 
 
