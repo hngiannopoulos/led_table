@@ -92,6 +92,7 @@ void Interrupt(){
 }
 
 void int_draw_frame(){
+      byte numberOfBytesRead = 0;
       frame_draw_flag = 1;
       for(byte i = 0; i < 100; i++){
             SPI.transfer(leds[i].r);
@@ -102,7 +103,11 @@ void int_draw_frame(){
       //Grab Any Serial Into memory Buffer And change program position
       if(Serial.available()){
          memset(instruction_buffer, 0x00,   SERIAL_BUFFER_LENGTH * sizeof(uint8_t));
-         Serial.readBytesUntil(10, instruction_buffer, SERIAL_BUFFER_LENGTH);
+
+         numberOfBytesRead = Serial.readBytesUntil(10, instruction_buffer, SERIAL_BUFFER_LENGTH);
+         if(numberOfBytesRead > 3){
+            draw.setString((char *)(instruction_buffer + 2));
+         }
          globalProgramPos = (instruction_buffer[1] != 10) ? instruction_buffer[1] : globalProgramPos;
       }
    }
@@ -142,7 +147,7 @@ void setup() {
    Timer1.initialize(FRAMERATE);
    Timer1.attachInterrupt(int_draw_frame);
 
-   char testString[] = "HELLO WORLD";
+   char testString[] = "Scroll Text";
 
    draw.setString(testString);
    Serial.println("OUT");

@@ -42,7 +42,7 @@ void placeChar(char Character, byte xPos, byte yPos, struct CRGB color);
 
 
 /*
-    INPUTS: string[] - string to display. yPos- y position of the scrolling text on the display. 
+    INPUTS: string[] - string to MAdisplay. yPos- y position of the scrolling text on the display. 
  scanPosition - what portion of the buffer to print on screen. disp - pointer to display matrix
  color- color of the text. 
  OUTPUT: PositionInBuffer - 10 - 

@@ -174,8 +174,10 @@ void draw::setString(char string[]){
    int positionInBuffer = 0;
    int stringLength     = 0;
    char letter;
-   scanPosition = 15;
-   while(string[stringLength] != 0){            //Determine length of the string
+   scanPosition = 0;
+   memset(messageBuffer, 0x00, MAX_BUFFER_LEN * sizeof(uint8_t));
+
+   while((string[stringLength] != 0) && (string[stringLength] != 10)){            //Determine length of the string
       stringLength++;
    }
    bufferLength = (stringLength*6)+20;
@@ -190,12 +192,13 @@ void draw::setString(char string[]){
    for(byte character = 0; character < stringLength; character++){             //for each charater in the string
       letter = string[character];                                              //copy ASCII value from string
 
-      for(byte verticalData = 0; verticalData <5; verticalData++){              //for each vertical byte of a letter
-         byte temp = pgm_read_byte_near(((font5x7[letter-48])+verticalData));   //copy data from progmem
-         //copy data from the font to its respective spot in message buffer
-         messageBuffer[positionInBuffer++] = temp;                        
-      }
-      messageBuffer[positionInBuffer++] = 0x00;
+
+         for(byte verticalData = 0; verticalData <5; verticalData++){              //for each vertical byte of a letter
+            byte temp = pgm_read_byte_near(((font5x7[letter-32])+verticalData));   //copy data from progmem
+            //copy data from the font to its respective spot in message buffer
+            messageBuffer[positionInBuffer++] = temp;                        
+         }
+         messageBuffer[positionInBuffer++] = 0x00;
    }
    //ADD 10 Columns at the end of the message
    for(byte i = 0; i<10; i++){
@@ -206,16 +209,16 @@ void draw::setString(char string[]){
 
 
 byte draw::scrollText(struct CRGB color){
-
+   int position = (scanPosition >> 1);
    //Print characterBuffer to the screen 
    memset(disp, 0, NUM_LEDS * sizeof(struct CRGB));
-   for(byte x = scanPosition;   x < (10+scanPosition) ; x++){
+   for(byte x = position;   x < (10+position) ; x++){
       for(byte y = 0; y < (8); y++){
          if(((messageBuffer[x]>>(7-(y))) & B00000001) != 0)
-            disp[CORDINATE(x-scanPosition,(y+2))] = color;
+            disp[CORDINATE(x-position,(y+2))] = color;
       }
    }
-   if(scanPosition < bufferLength){
+   if(position < bufferLength){
       scanPosition++;
    }
    else{
