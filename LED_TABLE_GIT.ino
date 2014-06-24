@@ -33,7 +33,7 @@ RTC_DS1307 rtc;
 
 #define FRAMERATE 40000 //about 40ms (in us) == 25fps
 
-#define INITIAL_PROGRAM_POS   'E' 
+#define INITIAL_PROGRAM_POS   'B' 
 
 
 ///////////////////////////////////////
@@ -80,13 +80,14 @@ void Interrupt(){
    static char last_state = RAINBOW;
    unsigned long interrupt_time = millis();
    if(interrupt_time - last_interrupt > debounceTime){   
-      if(globalProgramPos == LEDS_OFF){
+      globalProgramPos++;
+      /*if(globalProgramPos == LEDS_OFF){
          globalProgramPos = last_state;
       }
       else{
          last_interrupt = globalProgramPos;
          globalProgramPos = LEDS_OFF;
-      }
+      }*/
    }
    last_interrupt = interrupt_time;
 }
@@ -99,18 +100,7 @@ void int_draw_frame(){
             SPI.transfer(leds[i].g);
             SPI.transfer(leds[i].b);
       }
-
-      //Grab Any Serial Into memory Buffer And change program position
-      if(Serial.available()){
-         memset(instruction_buffer, 0x00,   SERIAL_BUFFER_LENGTH * sizeof(uint8_t));
-
-         numberOfBytesRead = Serial.readBytesUntil(10, instruction_buffer, SERIAL_BUFFER_LENGTH);
-         if(numberOfBytesRead > 3){
-            draw.setString((char *)(instruction_buffer + 2));
-         }
-         globalProgramPos = (instruction_buffer[1] != 10) ? instruction_buffer[1] : globalProgramPos;
-      }
-   }
+}
 
 
 /*
@@ -118,7 +108,7 @@ void int_draw_frame(){
 */
 void setup() {
    Serial.begin(115200);
-   Serial.setTimeout(4);
+   //Serial.setTimeout(4);
 
    randomSeed(analogRead(0));
    SPI.begin(); // wake up the SPI bus.
@@ -155,6 +145,19 @@ void setup() {
 }
 
 void loop() { 
+   int numberOfBytesRead = 0;
+    if(Serial.available()){
+         memset(instruction_buffer, 0x00,   SERIAL_BUFFER_LENGTH * sizeof(uint8_t));
+         numberOfBytesRead = Serial.readBytesUntil(0x0A, instruction_buffer, SERIAL_BUFFER_LENGTH);
+         if(numberOfBytesRead > 3){
+           draw.setString((char *)(instruction_buffer + 2));
+         }
+         while(Serial.available()){
+            Serial.read();
+         }
+         Serial.println(instruction_buffer);
+         globalProgramPos = instruction_buffer[1];
+      }
 
    switch(globalProgramPos){
 //-----------------------------------------------------------------------
@@ -202,7 +205,7 @@ void loop() {
             break;
             
          default:
-            globalProgramPos = TEST;
+            globalProgramPos = LEDS_OFF;
             break;
             
    }      
