@@ -177,7 +177,7 @@ void draw::setString(char string[]){
    scanPosition = 0;
    memset(messageBuffer, 0x00, MAX_BUFFER_LEN * sizeof(uint8_t));
 
-   while((string[stringLength] != 0) && (string[stringLength] != 10)){            //Determine length of the string
+   while((string[stringLength] != 0) && (string[stringLength] != 0x0D)){            //Determine length of the string
       stringLength++;
    }
    bufferLength = (stringLength*6)+20;

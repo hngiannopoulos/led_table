@@ -108,7 +108,7 @@ void int_draw_frame(){
 */
 void setup() {
    Serial.begin(115200);
-   //Serial.setTimeout(4);
+   Serial.setTimeout(4);
 
    randomSeed(analogRead(0));
    SPI.begin(); // wake up the SPI bus.
@@ -146,17 +146,25 @@ void setup() {
 
 void loop() { 
    int numberOfBytesRead = 0;
+   char start_byte = 0;
     if(Serial.available()){
          memset(instruction_buffer, 0x00,   SERIAL_BUFFER_LENGTH * sizeof(uint8_t));
-         numberOfBytesRead = Serial.readBytesUntil(0x0A, instruction_buffer, SERIAL_BUFFER_LENGTH);
-         if(numberOfBytesRead > 3){
-           draw.setString((char *)(instruction_buffer + 2));
+         numberOfBytesRead = Serial.readBytes(instruction_buffer, SERIAL_BUFFER_LENGTH);
+         for(int i = 0; i < numberOfBytesRead; i++){     //find start character
+            if(instruction_buffer[i] == 0xF8){
+               start_byte = (i + 1);
+            }
+            if((instruction_buffer[i] == 0x0A) || (instruction_buffer[i] == 0x0D)){
+               instruction_buffer[i] = 0x00;
+            }
          }
-         while(Serial.available()){
-            Serial.read();
+
+
+         if(numberOfBytesRead > 3){
+           draw.setString((char *)(instruction_buffer + start_byte + 1));
          }
          Serial.println(instruction_buffer);
-         globalProgramPos = instruction_buffer[1];
+         globalProgramPos = instruction_buffer[start_byte];
       }
 
    switch(globalProgramPos){
