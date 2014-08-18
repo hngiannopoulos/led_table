@@ -4,7 +4,7 @@
 #include <Wire.h>
 #include "snake.h"
 #include "draw.h"
-#include "RTClib.h"
+//#include "RTClib.h"
 #include "TimerOne.h"
 #include "FastLED.h"
 #include "SPI.h"
@@ -15,7 +15,7 @@
 /*
 *===========#DEFINES========================================================
 */
-RTC_DS1307 rtc;
+// RTC_DS1307 rtc;
 
 #define SERIAL_BUFFER_LENGTH 50
 
@@ -122,7 +122,7 @@ void setup() {
    digitalWrite(strobePin, HIGH);
 
    Wire.begin();
-   rtc.begin();
+//   rtc.begin();
 
    FastLED.setBrightness(brightness);
    FastLED.addLeds<WS2801, 11, 13, RGB, DATA_RATE_MHZ(1)>(leds, NUM_LEDS);
@@ -233,12 +233,12 @@ void makeRainbow(struct CRGB *disp, unsigned int hueStart) {
 }
 
 
-static const long hextable[] = {
-   [0 ... 255] = -1, // bit aligned access into this table is considerably
-   ['0'] = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, // faster for most modern processors,
-   ['A'] = 10, 11, 12, 13, 14, 15,       // for the space conscious, reduce to
-   ['a'] = 10, 11, 12, 13, 14, 15        // signed char.
-};
+//static const long hextable[] = {
+//   [0 ... 255] = -1, // bit aligned access into this table is considerably
+//   ['0'] = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, // faster for most modern processors,
+//   ['A'] = 10, 11, 12, 13, 14, 15,       // for the space conscious, reduce to
+//   ['a'] = 10, 11, 12, 13, 14, 15        // signed char.
+//};
 
 /** 
  * @brief convert a hexidecimal string to a signed long
@@ -249,10 +249,16 @@ static const long hextable[] = {
  * 
  * @return -1 on error, or result (max sizeof(long)-1 bits)
  */
-long hexdec(unsigned const char *hex) {
-   long ret = 0; 
-   while (*hex && ret >= 0) {
-      ret = (ret << 4) | hextable[*hex++];
-   }
-   return ret; 
-}
+//long hexdec(unsigned const char *hex) {
+//   long ret = 0; 
+//   while (*hex && ret >= 0) {
+//      ret = (ret << 4) | hextable[*hex++];
+//   }
+//   return ret; 
+//}//long hexdec(unsigned const char *hex) {
+//   long ret = 0; 
+//   while (*hex && ret >= 0) {
+//      ret = (ret << 4) | hextable[*hex++];
+//   }
+//   return ret; 
+//}
